@@ -41,8 +41,7 @@ class LoginAPIView(GenericAPIView):
         password = data.get('password', None)
 
         user = User.objects.get(email=email)
-        if user:
-            if user.check_password(password):
-                serializer = self.serializer_class(user)
-                return response.Response(serializer.data, status=status.HTTP_200_OK)
+        if not user or not user.check_password(password):
             return response.Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        serializer = self.serializer_class(user)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
